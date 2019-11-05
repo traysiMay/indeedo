@@ -3,6 +3,7 @@ import { UserContext, UPDATE_USER } from './UserContext'
 import { GameContext } from './GameContext'
 import { BubbleContext } from './BubbleContext'
 let wtf = false
+let scorea = 0
 function App() {
   const { user, user_dispatch } = useContext(UserContext)
   const { bubblez, bubbles_dispatch } = useContext(BubbleContext)
@@ -13,19 +14,19 @@ function App() {
 
   const drawBubbles = ctx => {
     const movedBubbles = bubbles.current.map(b => {
-      const velocity = b.y > 400 ? 0 : 3
+      const velocity = b.y > 400 || b.popped ? 0 : 3
       ctx.beginPath()
       ctx.ellipse(
         b.x,
-        b.y + bubblez.velocity,
-        50,
-        50,
+        b.y + velocity,
+        b.size,
+        b.size,
         Math.PI / 4,
         0,
         2 * Math.PI,
       )
       ctx.stroke()
-      return { ...b, y: b.y + bubblez.velocity }
+      return { ...b, y: b.y + velocity }
     })
     bubbles.current = movedBubbles
   }
@@ -40,8 +41,12 @@ function App() {
       const x = e.layerX
       const y = e.layerY
       // loop bubbles and check collision, then dispatch destroy
-      if (Math.pow(x - 50, 2) + Math.pow(y - 50, 2) < Math.pow(50, 2))
-        console.log('hi')
+      for (let i = 0; i < bubbles.current.length; i++) {
+        const b = bubbles.current[i]
+        if (Math.pow(x - b.x, 2) + Math.pow(y - b.y, 2) < Math.pow(b.size, 2))
+          bubbles_dispatch({ type: 'POP_BUBBLE', id: b.id })
+        scorea += 1
+      }
     })
 
     ctx.beginPath()
@@ -56,19 +61,28 @@ function App() {
 
     animate()
 
-    setInterval(() => bubbles_dispatch({ type: 'ADD_BUBBLE' }), 5000)
-  }, [bubbles_dispatch, drawBubbles])
+    setInterval(() => bubbles_dispatch({ type: 'ADD_BUBBLE' }), 1000)
+  }, [bubbles_dispatch, drawBubbles, score])
 
   useEffect(() => {
     const newBubbles = bubblez.bubbles.filter(b => {
-      console.log(!Object.keys(bubbles.current).includes(b.id.toString()))
       return !Object.keys(bubbles.current).includes(b.id.toString())
     })
-    console.log(newBubbles)
-    const meepo = bubbles.current.concat(newBubbles)
-    bubbles.current = meepo
-    // console.log(bubbles.current)
-  }, [bubblez.bubbles])
+    const mergedBubbles = bubbles.current.concat(newBubbles)
+
+    bubbles.current = mergedBubbles
+  }, [bubblez, bubblez.bubbles])
+
+  useEffect(() => {
+    const newBubbles = bubbles.current.map(b => {
+      if (bubblez.poppedBubbles.includes(b.id)) {
+        b.popped = true
+        return b
+      }
+      return b
+    })
+    bubbles.current = newBubbles
+  }, [bubblez.poppedBubbles])
 
   const handleUserChange = e =>
     user_dispatch({ type: UPDATE_USER, name: e.target.value })
