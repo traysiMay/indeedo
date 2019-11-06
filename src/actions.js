@@ -1,4 +1,7 @@
-export const ADD_BUBBLE = "ADD_BUBBLE";
-export const POP_BUBBLE = "POP_BUBBLE";
+export const ADD_BUBBLE = 'ADD_BUBBLE'
+export const POP_BUBBLE = 'POP_BUBBLE'
+export const UPDATE_VELOCITY = 'UPDATE_VELOCITY'
 
-export const INCREMENT_SCORE = "INCREMENT_SCORE";
+export const INCREMENT_SCORE = 'INCREMENT_SCORE'
+
+export const UPDATE_USER = 'UPDATE_USER'
