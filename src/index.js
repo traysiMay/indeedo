@@ -1,9 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import UserProvider from './UserContext';
-import GameProvider from './GameContext';
-import BubbleProvider from './BubbleContext';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import UserProvider from "./UserContext";
+import BubbleProvider from "./BubbleContext";
 
-ReactDOM.render(<BubbleProvider><GameProvider><UserProvider><App /></UserProvider></GameProvider></BubbleProvider>, document.getElementById('root'));
-
+ReactDOM.render(
+  <BubbleProvider>
+    <UserProvider>
+      <App />
+    </UserProvider>
+  </BubbleProvider>,
+  document.getElementById("root")
+);
