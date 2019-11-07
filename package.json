@@ -1,7 +1,8 @@
 {
-  "name": "indeed",
+  "name": "indeedo",
   "version": "0.1.0",
   "private": true,
+  "author": "ariel klevecz",
   "homepage": "https://traysimay.github.io/indeedo",
   "dependencies": {
     "gh-pages": "^2.1.1",

@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.js": "/indeedo/static/js/main.4726631f.chunk.js",
+    "main.js.map": "/indeedo/static/js/main.4726631f.chunk.js.map",
+    "runtime~main.js": "/indeedo/static/js/runtime~main.e43986dd.js",
+    "runtime~main.js.map": "/indeedo/static/js/runtime~main.e43986dd.js.map",
+    "static/js/2.86a209c1.chunk.js": "/indeedo/static/js/2.86a209c1.chunk.js",
+    "static/js/2.86a209c1.chunk.js.map": "/indeedo/static/js/2.86a209c1.chunk.js.map",
+    "index.html": "/indeedo/index.html",
+    "precache-manifest.cdddd01efb8ed90f8ec07a98e1cb4b0d.js": "/indeedo/precache-manifest.cdddd01efb8ed90f8ec07a98e1cb4b0d.js",
+    "service-worker.js": "/indeedo/service-worker.js"
+  }
+}
