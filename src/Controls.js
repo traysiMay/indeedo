@@ -11,7 +11,7 @@ import {
 const Controls = ({ setPlay, play }) => {
   const {
     bubbles_dispatch,
-    bubblez: { score }
+    bubblesState: { score }
   } = useContext(BubbleContext);
   return (
     <ControlsContainer>

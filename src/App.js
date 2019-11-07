@@ -28,7 +28,7 @@ import { getRandomInt } from "./utils";
 
 function App() {
   const { userState, user_dispatch } = useContext(UserContext);
-  const { bubblez, bubbles_dispatch } = useContext(BubbleContext);
+  const { bubblesState, bubbles_dispatch } = useContext(BubbleContext);
   const [play, setPlay] = useState(false);
   const canvasRef = useRef();
   const ctxRef = useRef();
@@ -36,7 +36,7 @@ function App() {
   const playRef = useRef();
   const velocityRef = useRef();
 
-  const bubbles = useRef(bubblez.bubbles);
+  const bubbles = useRef(bubblesState.bubbles);
 
   const drawBubbles = ctx => {
     const movedBubbles = bubbles.current.map((b, i) => {
@@ -100,7 +100,6 @@ function App() {
         setPlay(false);
       }
     });
-    console.log(window.innerWidth);
   }, []);
 
   useEffect(() => {
@@ -121,43 +120,43 @@ function App() {
   }, [play]);
 
   useEffect(() => {
-    velocityRef.current = bubblez.velocity;
-  }, [bubblez.velocity]);
+    velocityRef.current = bubblesState.velocity;
+  }, [bubblesState.velocity]);
 
   useEffect(() => {
-    const newBubbles = bubblez.bubbles.filter(b => {
+    const newBubbles = bubblesState.bubbles.filter(b => {
       return !Object.keys(bubbles.current).includes(b.id.toString());
     });
     const mergedBubbles = bubbles.current.concat(newBubbles);
 
     bubbles.current = mergedBubbles;
-  }, [bubblez.bubbles]);
+  }, [bubblesState.bubbles]);
 
   useEffect(() => {
     const newBubbles = bubbles.current.map(b => {
-      if (bubblez.poppedBubbles.includes(b.id)) {
+      if (bubblesState.poppedBubbles.includes(b.id)) {
         b.popped = true;
         return b;
       }
       return b;
     });
     bubbles.current = newBubbles;
-  }, [bubblez.poppedBubbles]);
+  }, [bubblesState.poppedBubbles]);
 
   useEffect(() => {
-    if (bubblez.gameOver) {
+    if (bubblesState.gameOver) {
       clearInterval(intervalRef.current);
     }
-  }, [bubblez.gameOver]);
+  }, [bubblesState.gameOver]);
 
   const handleUserChange = e =>
     user_dispatch({ type: UPDATE_USER, name: e.target.value });
 
   return (
     <div>
-      {!bubblez.gameOver && (
+      {!bubblesState.gameOver && (
         <Fragment>
-          {!bubblez.begin && (
+          {!bubblesState.begin && (
             <Nametainer>
               <Hey>Hey there! what may I call you?</Hey>
               <UserInput
@@ -171,13 +170,13 @@ function App() {
               </BeginButton>
             </Nametainer>
           )}
-          {bubblez.begin && (
+          {bubblesState.begin && (
             <Fragment>
-              <Timer>{bubblez.timer}</Timer>
+              <Timer>{bubblesState.timer}</Timer>
               <Controls
                 setPlay={setPlay}
                 play={play}
-                bubblez={bubblez}
+                bubblesState={bubblesState}
                 handleUserChange={handleUserChange}
               />
             </Fragment>
@@ -194,8 +193,8 @@ function App() {
           )}
         </Fragment>
       )}
-      {bubblez.gameOver && (
-        <GameOver name={userState.name} score={bubblez.score} />
+      {bubblesState.gameOver && (
+        <GameOver name={userState.name} score={bubblesState.score} />
       )}
     </div>
   );

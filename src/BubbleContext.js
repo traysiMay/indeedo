@@ -65,7 +65,7 @@ const bubbleReducer = (state, action) => {
       return { ...state, velocity };
     case TIMER_TICK:
       const timer = state.timer - 1;
-      const gameOver = timer === 57 ? true : false;
+      const gameOver = timer === 0 ? true : false;
       return { ...state, timer, gameOver };
     default:
       return state;
@@ -84,10 +84,13 @@ const initialState = {
 };
 
 const BubbleProvider = ({ children }) => {
-  const [bubblez, bubbles_dispatch] = useReducer(bubbleReducer, initialState);
+  const [bubblesState, bubbles_dispatch] = useReducer(
+    bubbleReducer,
+    initialState
+  );
 
   return (
-    <BubbleContext.Provider value={{ bubblez, bubbles_dispatch }}>
+    <BubbleContext.Provider value={{ bubblesState, bubbles_dispatch }}>
       {children}
     </BubbleContext.Provider>
   );
