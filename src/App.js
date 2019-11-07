@@ -1,129 +1,204 @@
 import React, {
-  useCallback,
+  Fragment,
   useContext,
   useEffect,
   useRef,
-  useState,
-} from 'react'
-import { UserContext } from './UserContext'
-import { BubbleContext } from './BubbleContext'
-import { POP_BUBBLE, ADD_BUBBLE, UPDATE_USER } from './actions'
-import Controls from './Controls'
-
-let wtf = false
+  useState
+} from "react";
+import { UserContext } from "./UserContext";
+import { BubbleContext } from "./BubbleContext";
+import {
+  POP_BUBBLE,
+  ADD_BUBBLE,
+  UPDATE_USER,
+  TIMER_TICK,
+  BEGIN_GAME
+} from "./actions";
+import Controls from "./Controls";
+import GameOver from "./GameOver";
+import {
+  BeginButton,
+  UserInput,
+  Timer,
+  Nametainer,
+  Hey,
+  FooterName
+} from "./styles";
+import { getRandomInt } from "./utils";
 
 function App() {
-  const { user, user_dispatch } = useContext(UserContext)
-  const { bubblez, bubbles_dispatch } = useContext(BubbleContext)
-  const [play, setPlay] = useState(false)
-  const canvasRef = useRef()
-  const ctxRef = useRef()
-  const intervalRef = useRef()
-  const playRef = useRef()
+  const { userState, user_dispatch } = useContext(UserContext);
+  const { bubblez, bubbles_dispatch } = useContext(BubbleContext);
+  const [play, setPlay] = useState(false);
+  const canvasRef = useRef();
+  const ctxRef = useRef();
+  const intervalRef = useRef();
+  const playRef = useRef();
+  const velocityRef = useRef();
 
-  const bubbles = useRef(bubblez.bubbles)
+  const bubbles = useRef(bubblez.bubbles);
 
   const drawBubbles = ctx => {
-    const movedBubbles = bubbles.current.map(b => {
-      const velocity = b.y > 500 + b.y || b.popped ? 0 : bubblez.velocity
-      const size = b.popped ? 0 : b.size
-      ctx.beginPath()
-      ctx.ellipse(b.x, b.y + velocity, size, size, Math.PI / 4, 0, 2 * Math.PI)
-      ctx.stroke()
-      return { ...b, y: b.y + velocity }
-    })
-    bubbles.current = movedBubbles
-  }
+    const movedBubbles = bubbles.current.map((b, i) => {
+      const velocity = b.y > 500 + b.y ? 0 : velocityRef.current / 30;
+      const size = b.popped ? 0 : b.size;
 
-  const animate = useCallback(() => {
+      if (i === bubbles.current.length - 1 && b.y > b.size + 100) {
+        bubbles_dispatch({ type: ADD_BUBBLE });
+      }
+
+      ctx.beginPath();
+      ctx.ellipse(b.x, b.y + velocity, size, size, Math.PI / 4, 0, 2 * Math.PI);
+      ctx.stroke();
+      return { ...b, y: b.y + velocity };
+    });
+    bubbles.current = movedBubbles;
+  };
+
+  const animate = () => {
     if (playRef.current) {
-      requestAnimationFrame(animate)
-      ctxRef.current.clearRect(0, 0, 500, 500)
-      drawBubbles(ctxRef.current)
+      requestAnimationFrame(animate);
+      ctxRef.current.clearRect(0, 0, 500, 500);
+      drawBubbles(ctxRef.current);
     }
-  })
+  };
 
-  function handleClick(e) {
-    const x = e.layerX
-    const y = e.layerY
+  const introAnimate = () => {
+    requestAnimationFrame(introAnimate);
+    const size = getRandomInt(0, 500);
+    ctxRef.current.lineWidth = getRandomInt(1, 10);
+    ctxRef.current.strokeStyle = getRandomInt(1, 10) > 5 ? "black" : "white";
+    ctxRef.current.beginPath();
+    ctxRef.current.ellipse(250, 250, size, size, Math.PI / 4, 0, 2 * Math.PI);
+    ctxRef.current.stroke();
+  };
+
+  const handleClick = e => {
+    const x = e.layerX;
+    const y = e.layerY;
     for (let i = 0; i < bubbles.current.length; i++) {
-      const b = bubbles.current[i]
-      if (Math.pow(x - b.x, 2) + Math.pow(y - b.y, 2) < Math.pow(b.size, 2))
-        bubbles_dispatch({ type: POP_BUBBLE, id: b.id })
+      const b = bubbles.current[i];
+      if (Math.pow(x - b.x, 2) + Math.pow(y - b.y, 2) < Math.pow(b.size, 2)) {
+        bubbles_dispatch({
+          type: POP_BUBBLE,
+          id: b.id,
+          points: Math.floor(100 / b.size)
+        });
+      }
     }
-  }
+  };
 
   useEffect(() => {
-    if (wtf) return
-    wtf = true
-    const ctx = canvasRef.current.getContext('2d')
-    ctxRef.current = ctx
-    ctx.fillStyle = 'red'
-    ctx.fillRect(0, 0, 500, 500)
-    canvasRef.current.addEventListener('click', handleClick, true)
-
-    document.addEventListener('visibilitychange', function() {
+    const ctx = canvasRef.current.getContext("2d");
+    ctxRef.current = ctx;
+    ctx.fillStyle = "red";
+    ctx.fillRect(0, 0, 500, 500);
+    canvasRef.current.addEventListener("click", handleClick, true);
+    introAnimate();
+    document.addEventListener("visibilitychange", function() {
       if (document.hidden) {
-        setPlay(false)
+        setPlay(false);
       }
-    })
-  }, [handleClick])
+    });
+    console.log(window.innerWidth);
+  }, []);
 
   useEffect(() => {
     if (play) {
-      playRef.current = true
-      animate()
+      playRef.current = true;
+      bubbles_dispatch({ type: ADD_BUBBLE });
+
+      animate();
       intervalRef.current = setInterval(
-        () => bubbles_dispatch({ type: ADD_BUBBLE }),
-        1000,
-      )
+        () => bubbles_dispatch({ type: TIMER_TICK }),
+        1000
+      );
     } else {
-      canvasRef.current.style.pointerEvents = 'none'
-      playRef.current = false
-      clearInterval(intervalRef.current)
+      canvasRef.current.style.pointerEvents = "none";
+      playRef.current = false;
+      clearInterval(intervalRef.current);
     }
-  }, [animate, bubbles_dispatch, play])
+  }, [play]);
+
+  useEffect(() => {
+    velocityRef.current = bubblez.velocity;
+  }, [bubblez.velocity]);
 
   useEffect(() => {
     const newBubbles = bubblez.bubbles.filter(b => {
-      return !Object.keys(bubbles.current).includes(b.id.toString())
-    })
-    const mergedBubbles = bubbles.current.concat(newBubbles)
+      return !Object.keys(bubbles.current).includes(b.id.toString());
+    });
+    const mergedBubbles = bubbles.current.concat(newBubbles);
 
-    bubbles.current = mergedBubbles
-  }, [bubblez, bubblez.bubbles])
+    bubbles.current = mergedBubbles;
+  }, [bubblez.bubbles]);
 
   useEffect(() => {
     const newBubbles = bubbles.current.map(b => {
       if (bubblez.poppedBubbles.includes(b.id)) {
-        b.popped = true
-        return b
+        b.popped = true;
+        return b;
       }
-      return b
-    })
-    bubbles.current = newBubbles
-  }, [bubblez.poppedBubbles])
+      return b;
+    });
+    bubbles.current = newBubbles;
+  }, [bubblez.poppedBubbles]);
+
+  useEffect(() => {
+    if (bubblez.gameOver) {
+      clearInterval(intervalRef.current);
+    }
+  }, [bubblez.gameOver]);
 
   const handleUserChange = e =>
-    user_dispatch({ type: UPDATE_USER, name: e.target.value })
+    user_dispatch({ type: UPDATE_USER, name: e.target.value });
 
   return (
     <div>
-      <Controls
-        setPlay={setPlay}
-        play={play}
-        bubblez={bubblez}
-        user={user}
-        handleUserChange={handleUserChange}
-      />
-      <canvas
-        ref={canvasRef}
-        style={{ pointerEvents: play ? 'auto' : 'none' }}
-        width="500px"
-        height="500px"
-      />
+      {!bubblez.gameOver && (
+        <Fragment>
+          {!bubblez.begin && (
+            <Nametainer>
+              <Hey>Hey there! what may I call you?</Hey>
+              <UserInput
+                onChange={handleUserChange}
+                placeholder="name"
+              ></UserInput>
+              <BeginButton
+                onClick={() => bubbles_dispatch({ type: BEGIN_GAME })}
+              >
+                CONTINUE
+              </BeginButton>
+            </Nametainer>
+          )}
+          {bubblez.begin && (
+            <Fragment>
+              <Timer>{bubblez.timer}</Timer>
+              <Controls
+                setPlay={setPlay}
+                play={play}
+                bubblez={bubblez}
+                handleUserChange={handleUserChange}
+              />
+            </Fragment>
+          )}
+          <canvas
+            style={{ touchAction: "none" }}
+            ref={canvasRef}
+            style={{ pointerEvents: play ? "auto" : "none" }}
+            width="500px"
+            height="500px"
+          />
+          {userState.name && (
+            <FooterName>Good luck {userState.name}!</FooterName>
+          )}
+        </Fragment>
+      )}
+      {bubblez.gameOver && (
+        <GameOver name={userState.name} score={bubblez.score} />
+      )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
