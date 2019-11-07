@@ -1,34 +1,39 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const Nametainer = styled.div`
   display: grid;
   grid-template-columns: 340px;
   grid-row-gap: 12px;
-  margin-left: 20px;
-`;
+  border: 2px black solid;
+  width: 422px;
+  padding: 12px;
+  margin: 22px;
+  box-shadow: 9px 8px black;
+`
 export const Hey = styled.div`
   font-family: sans-serif;
-  font-size: 40px;
-`;
+  font-size: 24px;
+`
 export const UserInput = styled.input`
-  height: 40px;
+  height: 18px;
   border: 2px solid black;
   padding: 10px;
-  font-size: 30px;
-`;
+  font-size: 20px;
+  width: 240px;
+`
 
 export const Timer = styled.div`
   border: 2px solid black;
   border-radius: 43rem;
   padding: 15px;
-
   text-align: center;
-  width: 57.2px;
+  width: 60px;
   font-size: 46px;
-  font-family: fantasy;
+  font-family: monospace;
   display: block;
-  margin: 30px 210px;
-`;
+  margin: 30px 190px;
+  height: 60px;
+`
 
 export const ControlsContainer = styled.div`
   display: grid;
@@ -37,13 +42,13 @@ export const ControlsContainer = styled.div`
   width: 500px;
   height: 117px;
   background: white;
-`;
+`
 export const Score = styled.div`
   text-align: center;
   font-size: 44px;
   font-family: monospace;
   line-height: 70px;
-`;
+`
 
 export const PlayButton = styled.button`
   background: white;
@@ -52,7 +57,7 @@ export const PlayButton = styled.button`
   font-family: sans-serif;
   border: 3px solid black;
   border-radius: 2rem;
-`;
+`
 
 export const BeginButton = styled(PlayButton)`
   background: white;
@@ -65,21 +70,21 @@ export const BeginButton = styled(PlayButton)`
   margin-bottom: 10px;
   width: 170px;
   height: 60px;
-`;
+`
 
 export const SliderContainer = styled.div`
   grid-row: 2;
   grid-column: 1 / span 2;
 
-  input[type="range"] {
+  input[type='range'] {
     -webkit-appearance: none;
     margin: 18px 0;
     width: 99%;
   }
-  input[type="range"]:focus {
+  input[type='range']:focus {
     outline: none;
   }
-  input[type="range"]::-webkit-slider-runnable-track {
+  input[type='range']::-webkit-slider-runnable-track {
     width: 99%;
     height: 8.4px;
     cursor: pointer;
@@ -89,7 +94,7 @@ export const SliderContainer = styled.div`
     border-radius: 1.3px;
     border: 0.2px solid #010101;
   }
-  input[type="range"]::-webkit-slider-thumb {
+  input[type='range']::-webkit-slider-thumb {
     box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
     border: 1px solid #000000;
     height: 30px;
@@ -100,13 +105,17 @@ export const SliderContainer = styled.div`
     -webkit-appearance: none;
     margin-top: -11px;
   }
-  input[type="range"]:focus::-webkit-slider-runnable-track {
+  input[type='range']:focus::-webkit-slider-runnable-track {
     background: red;
   }
-`;
+`
 
 export const FooterName = styled.div`
   margin: 20px;
   font-size: 40px;
   font-family: sans-serif;
-`;
+  border: 2px solid black;
+  padding: 10px;
+  width: 420px;
+  box-shadow: 6px 8px black;
+`
